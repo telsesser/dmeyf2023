@@ -1,0 +1,46 @@
+
+4/9/23
+
+## Z401
+
+Feature engineering:
+2_ importancia de variables
+
+sumar cantidad te tarjetas visa con las master y el resto
+relacion entre prestado/saldo en cuenta. 
+combinar comisiones
+Sacar numero de cliente 
+
+3_ datos nulos:
+rpart acepta manejo de datos nulos
+imputar nomás si estoy seguro que nulo=0
+	imputar por valores arbitriarios es dificil que funcione
+
+4_ Correlaciones:
+en otros algoritmos: hay que evitar las correlaciones por que afecta los calculos matriciales
+En los arboles el mismo algoritmo suele eliminarlas
+
+5_ Outliers
+No son un problema los outliers (para árboles), no gastar tiempo en esto
+
+6_ Data driftting
+Cuando el modelo deja de funcionar por que cambia la relevancia o peso de los datos.
+La inflación por ejemplo, pero en este caso al estar de un mes a otro no afecta. 
+El aguinaldo, bonos, etc. pueden afectar.
+Por ejemplo antes eran importantes las cantidad de cheques, después el uso del homebanking y ahora las app. 
+El módelo se tiene que ir actualizando.
+
+conseptual driftting serían por ejemplo los fraudes que no se podrían modeloar porque cuando se detecta uno 
+ya cambian la metodologí y el módelo no me sirve para identificar los nuevos fraudes.
+
+probar decilado de 10, 100. O sea asignar el 10% más bajos al primer decil, el siguiente 10% al segundo decil y así.
+
+Para hacer:
+Tomar modelo de la carpeta rpart
+Buscar variables que arreglen el datadrifting en algo (al hacerlo sacar variable original)
+Hacer featuring engineering (más que nada combinar variables)
+dejar el rpart corriendo mientras pienso el fueature engineering porque tarda mucho en ejecutar 
+(dijo 1 día)
+filtrar la cantidad de 1 en la salida, el punto de corte, para ir probando diferentes en el kaggle. 
+para hacer esto quedarme con por ejemplo los primeros 10000 que más probabilidades tengan de ser +1
+buscar la meseta en el public, en que valores empieza a bajar mucho el score. 

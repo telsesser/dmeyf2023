@@ -8,7 +8,7 @@ require("rpart.plot")
 
 # Aqui se debe poner la carpeta de la materia de SU computadora local
 # setwd("X:\\gdrive\\uba2023\\") # Establezco el Working Directory
-setwd("/home/tomi/Escritorio/Maestria/2 - DMEyF/")
+setwd("./Maestria/2 - DMEyF/")
 # cargo el dataset
 dataset <- fread("./datasets/resultados.csv")
 

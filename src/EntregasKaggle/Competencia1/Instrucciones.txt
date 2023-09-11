@@ -1,0 +1,2 @@
+1- Correr 1-FeatureEngineering.r sobre el dataset
+2- Generar el modelo con 2-Modelo.r

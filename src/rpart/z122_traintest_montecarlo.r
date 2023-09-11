@@ -8,7 +8,7 @@ require("parallel")
 PARAM <- list()
 # reemplazar por las propias semillas
 PARAM$semillas <- c(102191, 200177, 410551, 552581, 892237)
-
+PARAM$cores <- 6
 #------------------------------------------------------------------------------
 # particionar agrega una columna llamada fold a un dataset que consiste
 #  en una particion estratificada segun agrupa
@@ -78,13 +78,13 @@ ArbolEstimarGanancia <- function(semilla, param_basicos) {
 #------------------------------------------------------------------------------
 
 # Aqui se debe poner la carpeta de la computadora local
-setwd("X:\\gdrive\\uba2023\\") # Establezco el Working Directory
+setwd("/home/tomi/Escritorio/Maestria/2 - DMEyF/") # Establezco el Working Directory
 
 # cargo los datos
 dataset <- fread("./datasets/competencia_01.csv")
 
 # trabajo solo con los datos con clase, es decir 202103
-dataset <- dataset[foto_mes==202103]
+dataset <- dataset[foto_mes == 202103]
 
 
 param_basicos <- list(

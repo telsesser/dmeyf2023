@@ -20,12 +20,16 @@ require("data.table")
 require("rpart")
 require("ROCR")
 require("ggplot2")
+require("foreach")
+require("doParallel")
 
+registerDoParallel(7)
 
 # Poner la carpeta de la materia de SU computadora local
-setwd("/home/aleb/dmeyf23")
+setwd("/home/tomi/Escritorio/Maestria/2 - DMEyF/")
+
 # Poner sus semillas
-semillas <- c(17, 19, 23, 29, 31)
+semillas <- c(135977, 209173, 329891, 563011, 58246091)
 
 # Cargamos el dataset
 dataset <- fread("./datasets/competencia_01.csv")
@@ -34,10 +38,10 @@ dataset <- fread("./datasets/competencia_01.csv")
 dataset <- dataset[foto_mes == 202103]
 # Creamos una clase binaria
 dataset[, clase_binaria := ifelse(
-                            clase_ternaria == "BAJA+2",
-                                "evento",
-                                "noevento"
-                            )]
+    clase_ternaria == "BAJA+2",
+    "evento",
+    "noevento"
+)]
 # Borramos el target viejo
 dataset[, clase_ternaria := NULL]
 
@@ -46,9 +50,10 @@ set.seed(semillas[1])
 
 # Particionamos de forma estratificada
 in_training <- caret::createDataPartition(dataset$clase_binaria,
-                     p = 0.70, list = FALSE) 
-dtrain  <-  dataset[in_training, ]
-dtest   <-  dataset[-in_training, ]
+    p = 0.70, list = FALSE
+)
+dtrain <- dataset[in_training, ]
+dtest <- dataset[-in_training, ]
 
 ## Preguntas
 ## - ¿Por qué separamos en train/test?
@@ -64,12 +69,13 @@ dtest   <-  dataset[-in_training, ]
 # Medimos cuanto tarda nuestro modelo en ajustar
 start_time <- Sys.time()
 modelo <- rpart(clase_binaria ~ .,
-                data = dtrain,
-                xval = 0,
-                cp = 0,
-                minsplit = 20,
-                minbucket = 1,
-                maxdepth = 5)
+    data = dtrain,
+    xval = 0,
+    cp = 0,
+    minsplit = 20,
+    minbucket = 1,
+    maxdepth = 5
+)
 print(Sys.time() - start_time)
 
 pred_testing <- predict(modelo, dtest, type = "prob")
@@ -84,9 +90,9 @@ pred_testing <- predict(modelo, dtest, type = "prob")
 # Armamos una función que nos calcule la ganancia, usando el punto de corte de
 # 0.025
 ganancia <- function(probabilidades, clase) {
-  return(sum(
-    (probabilidades >= 0.025) * ifelse(clase == "evento", 273000, -7000))
-  )
+    return(sum(
+        (probabilidades >= 0.025) * ifelse(clase == "evento", 273000, -7000)
+    ))
 }
 
 # La ganancia en testing NORMALIZADA
@@ -101,37 +107,44 @@ print(ganancia(pred_testing[, "evento"], dtest$clase_binaria) / 0.3)
 ## ---------------------------
 
 # Almacenaremos los resultados en una tabla
-resultados_n_gan <- c()
+resultados_n_gan <- list()
 
 # Calcule en función del tiempo de ejecución anterior, cuantos árboles puede
 # hacer en 5 minutos y ponga ese número en la siguiente variable
-n <- 100
+n <- 10
 
 set.seed(semillas[1])
 t0 <- Sys.time()
-for (i in 1:n) {
-
+# for (i in 1:n) {
+resultados_n_gan <- foreach(i = 1:n, .combine = "c") %dopar% {
     in_training <- caret::createDataPartition(dataset[, get("clase_binaria")],
-                            p = 0.70, list = FALSE)
-    dtrain  <-  dataset[in_training, ]
-    dtest   <-  dataset[-in_training, ]
+        p = 0.70, list = FALSE
+    )
+    dtrain <- dataset[in_training, ]
+    dtest <- dataset[-in_training, ]
 
     modelo <- rpart(clase_binaria ~ .,
-                    data = dtrain,
-                    xval = 0,
-                    cp = 0,
-                    minsplit = 20,
-                    minbucket = 1,
-                    maxdepth = 5)
+        data = dtrain,
+        xval = 0,
+        cp = 0,
+        minsplit = 20,
+        minbucket = 1,
+        maxdepth = 5
+    )
 
     pred_testing <- predict(modelo, dtest, type = "prob")
 
     gan <- ganancia(pred_testing[, "evento"], dtest$clase_binaria) / 0.3
 
     resultados_n_gan <- c(resultados_n_gan, gan)
-}
-print(Sys.time() - t0)
 
+    return(resultados_n_gan)
+}
+
+resultados_n_gan <- unlist(resultados_n_gan)
+
+print(Sys.time() - t0)
+stopImplicitCluster()
 ## Preguntas:
 ## ¿Cree que puede cambiar mucho la ganancia en **test** para dos semillas
 ## distintas?
@@ -150,16 +163,18 @@ print(max(resultados_n_gan))
 print(mean(resultados_n_gan))
 
 # Veamos la dispersión de la ganancia
-ggplot() + aes(resultados_n_gan) + geom_density()
+ggplot() +
+    aes(resultados_n_gan) +
+    geom_density()
 
 ## Preguntas
 ## Buscamos separar los conjuntos de datos para hacer robustos nuestros modelos
-## y nos damos cuenta que las `semillas` pueden distorsionar enormemente 
+## y nos damos cuenta que las `semillas` pueden distorsionar enormemente
 ## las métricas reales (si es que existen).
 ## - ¿Por qué se produce semejante dispersión?
 ## - ¿Cuál considera que es el "valor real"?
-## 
-##   Dicho de otra forma, si aplicara el mismo modelo a un nuevo conjunto de 
+##
+##   Dicho de otra forma, si aplicara el mismo modelo a un nuevo conjunto de
 ##   datos, ¿cuál sería el esperado?
 
 ## ---------------------------
@@ -172,8 +187,9 @@ cantidad_arboles <- 5
 resultados_n_mcv <- c()
 set.seed(semillas[1])
 
-for (i in 1:50) 
+for (i in 1:50) {
     resultados_n_mcv <- c(resultados_n_mcv, mean(sample(resultados_n_gan, cantidad_arboles)))
+}
 
 # La menor ganancia conseguida en test
 print(min(resultados_n_mcv))
@@ -185,7 +201,9 @@ print(max(resultados_n_mcv))
 print(mean(resultados_n_mcv))
 
 # Veamos la dispersión de la ganancia
-ggplot() + aes(resultados_n_mcv) + geom_density()
+ggplot() +
+    aes(resultados_n_mcv) +
+    geom_density()
 
 ## NOTA: Esta técnica es conocida como Montecarlo Cross Validation
 ##
@@ -205,24 +223,25 @@ t0 <- Sys.time()
 for (s in semillas) {
     set.seed(s)
     in_training <- caret::createDataPartition(dataset[, get("clase_binaria")],
-                            p = 0.70, list = FALSE)
-    dtrain  <-  dataset[in_training, ]
-    dtest   <-  dataset[-in_training, ]
+        p = 0.70, list = FALSE
+    )
+    dtrain <- dataset[in_training, ]
+    dtest <- dataset[-in_training, ]
 
     modelo <- rpart(clase_binaria ~ .,
-                    data = dtrain,
-                    xval = 0,
-                    cp = 0,
-                    minsplit = 20,
-                    minbucket = 1,
-                    maxdepth = 5)
+        data = dtrain,
+        xval = 0,
+        cp = 0,
+        minsplit = 20,
+        minbucket = 1,
+        maxdepth = 5
+    )
 
     pred_testing <- predict(modelo, dtest, type = "prob")
 
     gan <- ganancia(pred_testing[, "evento"], dtest$clase_binaria) / 0.3
 
     resultados_mis_semillas <- c(resultados_mis_semillas, gan)
-
 }
 print(Sys.time() - t0)
 
@@ -243,49 +262,55 @@ resultados_grid_search <- data.table()
 
 # Complete los valores que se van a combinar para cada parámetro a explorar
 
-for (cp in c(-1, 0.01)) { 
-for (md in c(5, 10, 15, 30)) {
-for (ms in c(1, 50, 500, 1000)) {
-for (mb in c(1, as.integer(ms / 2))) {
 
-    t0 <- Sys.time()
-    gan_semillas <- c()
-    for (s in semillas) {
-        set.seed(s)
-        in_training <- caret::createDataPartition(dataset[,
-                        get("clase_binaria")],
-                                p = 0.70, list = FALSE)
-        dtrain  <-  dataset[in_training, ]
-        dtest   <-  dataset[-in_training, ]
+for (cp in c(-1)) {
+    for (md in c(15)) {
+        for (ms in c(2000, 5000)) {
+            for (mb in c(1, as.integer(ms / 2))) {
+                t0 <- Sys.time()
+                gan_semillas <- c()
+                for (s in semillas) {
+                    set.seed(s)
+                    in_training <- caret::createDataPartition(
+                        dataset[
+                            ,
+                            get("clase_binaria")
+                        ],
+                        p = 0.70, list = FALSE
+                    )
+                    dtrain <- dataset[in_training, ]
+                    dtest <- dataset[-in_training, ]
 
-        modelo <- rpart(clase_binaria ~ .,
+                    modelo <- rpart(clase_binaria ~ .,
                         data = dtrain,
                         xval = 0,
                         cp = cp,
                         minsplit = ms,
                         minbucket = mb,
-                        maxdepth = md)
+                        maxdepth = md
+                    )
 
-        pred_testing <- predict(modelo, dtest, type = "prob")
-        gan <- ganancia(pred_testing[, "evento"], dtest$clase_binaria) / 0.3
+                    pred_testing <- predict(modelo, dtest, type = "prob")
+                    gan <- ganancia(pred_testing[, "evento"], dtest$clase_binaria) / 0.3
 
-        gan_semillas <- c(gan_semillas, gan)
+                    gan_semillas <- c(gan_semillas, gan)
+                }
+                tiempo <- as.numeric(Sys.time() - t0, units = "secs")
+
+                resultados_grid_search <- rbindlist(list(
+                    resultados_grid_search,
+                    data.table(
+                        tiempo = tiempo,
+                        cp = cp,
+                        mb = mb,
+                        ms = ms,
+                        md = md,
+                        gan = mean(gan_semillas)
+                    ) # se puede agregar el sd?
+                ))
+            }
+        }
     }
-    tiempo <-  as.numeric(Sys.time() - t0, units = "secs")
-
-    resultados_grid_search <- rbindlist(list(
-                                resultados_grid_search,
-                                data.table(
-                                    tiempo = tiempo,
-                                    cp = cp,
-                                    mb = mb,
-                                    ms = ms,
-                                    md = md,
-                                    gan = mean(gan_semillas)) # se puede agregar el sd?
-                                ))
-}
-}
-}
 }
 
 # Visualizo los parámetros de los mejores parámetros
