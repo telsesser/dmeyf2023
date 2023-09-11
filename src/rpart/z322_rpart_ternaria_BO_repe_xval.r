@@ -20,15 +20,16 @@ require("mlrMBO")
 # Defino la  Optimizacion Bayesiana
 PARAM <- list()
 
-PARAM$home <- "~/buckets/b1/"
+# PARAM$home <- "~/buckets/b1/"
+PARAM$home <- "/home/tomi/Escritorio/Maestria/2 - DMEyF/"
 
-PARAM$experimento <- "HT3220"
+PARAM$experimento <- "HT3220_3"
 
 # Aqui van las 10 semillas que hacen el 10-repeated
 #  si se pone una sola semilla, se esta haciendo solo 5-fold xval
 PARAM$semilla_azar <- c(
-  102191, 200177, 410551, 552581, 892237,
-  753587, 247759, 253369, 955127, 800519
+  135977, 209173, 329891, 563011, 58246091,
+  75353487, 24772359, 25533469, 95521257, 843003519
 )
 
 # folds del cross validation
@@ -39,7 +40,7 @@ PARAM$BO_iter <- 300
 
 # la letra L al final de 1L significa ENTERO
 PARAM$hs <- makeParamSet(
-  makeNumericParam("cp", lower = -1, upper = 0.1),
+  # makeNumericParam("cp", lower = -1, upper = 0.1),
   makeIntegerParam("minsplit", lower = 1L, upper = 8000L),
   makeIntegerParam("minbucket", lower = 1L, upper = 4000L),
   makeIntegerParam("maxdepth", lower = 3L, upper = 20L),
@@ -48,8 +49,8 @@ PARAM$hs <- makeParamSet(
 # minbuket NO PUEDE ser mayor que la mitad de minsplit
 
 
-# este valor debe ser 1 si se utiliza Windows
-PARAM$cores <- 5
+# este valor debe ser 1 si se utiliza Windowshoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+PARAM$cores <- 7
 
 #------------------------------------------------------------------------------
 # graba a un archivo los componentes de lista
@@ -115,6 +116,7 @@ ArbolSimple <- function(fold_test, data, param) {
   # entreno en todo MENOS el fold_test que uso para testing
   modelo <- rpart("clase_ternaria ~ .",
     data = data[fold != fold_test, ],
+    cp = -1,
     xval = 0,
     control = param
   )
@@ -207,7 +209,7 @@ EstimarGanancia <- function(x) {
 setwd(PARAM$home)
 
 # cargo los datos
-dataset <- fread("./datasets/competencia_01.csv")
+dataset <- fread("./datasets/resultados.csv")
 # entreno en 202103
 dataset <- dataset[foto_mes == 202103]
 
