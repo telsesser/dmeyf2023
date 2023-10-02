@@ -18,7 +18,7 @@ require("rpart")
 require("ggplot2")
 
 # Poner la carpeta de la materia de SU computadora local
-setwd("/home/aleb/dmeyf23/datasets")
+setwd("/home/tomi/Escritorio/Maestria/2 - DMEyF/")
 # Poner sus semillas
 semillas <- c(17, 19, 23, 29, 31)
 
@@ -33,17 +33,18 @@ rm(dataset)
 # Armamos diferentes clases binarias:
 # Sólo es evento las clase BAJA+2
 marzo[, clase_binaria1 := ifelse(
-                            clase_ternaria == "BAJA+2",
-                                "evento",
-                                "noevento"
-                            )]
+      clase_ternaria == "BAJA+2",
+      "evento",
+      "noevento"
+)]
 
 # Entrenamos en Marzo para ver como funciona nuestro modelo en Mayo.
 parametros <- list(cp = -1, minsplit = 1073, minbucket = 278, maxdepth = 9)
 modelo <- rpart(clase_binaria1 ~ . - clase_ternaria,
-                data = marzo,
-                xval = 0,
-                control = parametros)
+      data = marzo,
+      xval = 0,
+      control = parametros
+)
 
 ## ---------------------------
 ## Step 2: Aplicando ese modelo a los datos de Mayo
@@ -54,8 +55,9 @@ mayo$pred <- predict(modelo, mayo, type = "prob")[, "evento"]
 
 # mayo entero
 mayo[, sum(ifelse(pred > 0.025,
-                ifelse(clase_ternaria == "BAJA+2", 273000, -7000)
-            , 0))]
+      ifelse(clase_ternaria == "BAJA+2", 273000, -7000),
+      0
+))]
 
 ## ---------------------------
 ## Step 3: Creando 100 leaderboards
@@ -64,14 +66,17 @@ mayo[, sum(ifelse(pred > 0.025,
 leaderboad <- data.table()
 set.seed(semillas[1])
 for (i in 1:100) {
-  split <- caret::createDataPartition(mayo$clase_ternaria,
-                     p = 0.70, list = FALSE)
-  privado <- sum((mayo$pred[split] > 0.025) *
-        ifelse(mayo$clase_ternaria[split] == "BAJA+2", 273000, -7000)) / 0.7
-  publico <- sum((mayo$pred[-split] > 0.025) *
-        ifelse(mayo$clase_ternaria[-split] == "BAJA+2", 273000, -7000)) / 0.3
-  leaderboad <- rbindlist(list(leaderboad,
-                data.table(privado = privado, publico = publico)))
+      split <- caret::createDataPartition(mayo$clase_ternaria,
+            p = 0.70, list = FALSE
+      )
+      privado <- sum((mayo$pred[split] > 0.025) *
+            ifelse(mayo$clase_ternaria[split] == "BAJA+2", 273000, -7000)) / 0.7
+      publico <- sum((mayo$pred[-split] > 0.025) *
+            ifelse(mayo$clase_ternaria[-split] == "BAJA+2", 273000, -7000)) / 0.3
+      leaderboad <- rbindlist(list(
+            leaderboad,
+            data.table(privado = privado, publico = publico)
+      ))
 }
 
 leaderboad$r_privado <- frank(leaderboad$privado)
@@ -91,8 +96,9 @@ summary(leaderboad)
 ## Step 4: Graficando leaderboads
 ## ---------------------------
 
-df <- melt(leaderboad, measure.vars =  c("privado", "publico"))
-ggplot(df, aes(x = value, color = variable)) + geom_density()
+df <- melt(leaderboad, measure.vars = c("privado", "publico"))
+ggplot(df, aes(x = value, color = variable)) +
+      geom_density()
 
 ## Observaciones?
 
@@ -104,16 +110,18 @@ ggplot(df, aes(x = value, color = variable)) + geom_density()
 
 parametros2 <- list(cp = -1, minsplit = 2, minbucket = 1, maxdepth = 5)
 modelo2 <- rpart(clase_binaria1 ~ . - clase_ternaria,
-                data = marzo,
-                xval = 0,
-                control = parametros2)
+      data = marzo,
+      xval = 0,
+      control = parametros2
+)
 
 mayo$pred2 <- predict(modelo2, mayo, type = "prob")[, "evento"]
 
 # Mayo entero
 mayo[, sum(ifelse(pred2 >= 0.025,
-                ifelse(clase_ternaria == "BAJA+2", 273000, -7000)
-            , 0))]
+      ifelse(clase_ternaria == "BAJA+2", 273000, -7000),
+      0
+))]
 
 ## Preguntas
 ## Abriendo la caja de pandora, ¿Cúal de los dos modelos era mejor?
@@ -125,24 +133,29 @@ mayo[, sum(ifelse(pred2 >= 0.025,
 leaderboad2 <- data.table()
 set.seed(semillas[1])
 for (i in 1:100) {
-  split <- caret::createDataPartition(marzo$clase_ternaria,
-                     p = 0.70, list = FALSE)
+      split <- caret::createDataPartition(marzo$clase_ternaria,
+            p = 0.70, list = FALSE
+      )
 
-  privado <- sum((mayo$pred[split] > 0.025) *
-        ifelse(mayo$clase_ternaria[split] == "BAJA+2", 273000, -7000)) / 0.7
-  publico <- sum((mayo$pred[-split] > 0.025) *
-        ifelse(mayo$clase_ternaria[-split] == "BAJA+2", 273000, -7000)) / 0.3
+      privado <- sum((mayo$pred[split] > 0.025) *
+            ifelse(mayo$clase_ternaria[split] == "BAJA+2", 273000, -7000)) / 0.7
+      publico <- sum((mayo$pred[-split] > 0.025) *
+            ifelse(mayo$clase_ternaria[-split] == "BAJA+2", 273000, -7000)) / 0.3
 
-  privado2 <- sum((mayo$pred2[split] > 0.025) *
-        ifelse(mayo$clase_ternaria[split] == "BAJA+2", 273000, -7000)) / 0.7
-  publico2 <- sum((mayo$pred2[-split] > 0.025) *
-        ifelse(mayo$clase_ternaria[-split] == "BAJA+2", 273000, -7000)) / 0.3
+      privado2 <- sum((mayo$pred2[split] > 0.025) *
+            ifelse(mayo$clase_ternaria[split] == "BAJA+2", 273000, -7000)) / 0.7
+      publico2 <- sum((mayo$pred2[-split] > 0.025) *
+            ifelse(mayo$clase_ternaria[-split] == "BAJA+2", 273000, -7000)) / 0.3
 
-  leaderboad2 <- rbindlist(list(leaderboad2,
-                data.table(privado = privado,
-                           publico = publico,
-                           privado2 = privado2,
-                           publico2 = publico2)))
+      leaderboad2 <- rbindlist(list(
+            leaderboad2,
+            data.table(
+                  privado = privado,
+                  publico = publico,
+                  privado2 = privado2,
+                  publico2 = publico2
+            )
+      ))
 }
 
 leaderboad2
@@ -156,8 +169,10 @@ leaderboad2
 ## Step 7: Compitiendo entre dos modelos, las curvas!
 ## ---------------------------
 
-df2 <- melt(leaderboad2, measure.vars =  c("publico", "publico2"))
-ggplot(df2, aes(x = value, color = variable)) + geom_density()
+df2 <- melt(leaderboad2, measure.vars = c("publico", "publico2"))
+ggplot(df2, aes(x = value, color = variable)) +
+      geom_density()
 
-df3 <- melt(leaderboad2, measure.vars =  c("privado", "privado2"))
-ggplot(df3, aes(x = value, color = variable)) + geom_density()
+df3 <- melt(leaderboad2, measure.vars = c("privado", "privado2"))
+ggplot(df3, aes(x = value, color = variable)) +
+      geom_density()

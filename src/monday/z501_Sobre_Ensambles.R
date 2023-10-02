@@ -48,9 +48,9 @@ require("lightgbm")
 
 
 # Poner la carpeta de la materia de SU computadora local
-setwd("/home/aleb/dmeyf23")
+setwd("/home/tomi/Escritorio/Maestria/2 - DMEyF/")
 # Poner sus semillas
-semillas <- c(17, 19, 23, 29, 31)
+semillas <- c(135977, 209173, 329891, 563011, 58246091)
 
 # Cargamos el dataset
 dataset <- fread("./datasets/competencia_01.csv")
@@ -62,28 +62,31 @@ dataset <- dataset[foto_mes == 202103]
 dataset[, clase_binaria1 := factor(ifelse(clase_ternaria == "BAJA+2", "evento", "noevento"))]
 dataset$clase_ternaria <- NULL
 in_training <- caret::createDataPartition(dataset$clase_binaria1,
-                     p = 0.70, list = FALSE)
+      p = 0.70, list = FALSE
+)
 
-dtrain  <-  dataset[in_training, ]
-dtest   <-  dataset[-in_training, ]
+dtrain <- dataset[in_training, ]
+dtest <- dataset[-in_training, ]
 
 # ranger no soporta, como lo hacen otras librerías, los missing values
-dtrain <-  na.roughfix(dtrain)
-dtest <-  na.roughfix(dtest)
+dtrain <- na.roughfix(dtrain)
+dtest <- na.roughfix(dtest)
 
 # Cantidad de variables que abren por cada hoja
 n_variables <- round(sqrt(dim(dtrain)[2] - 1))
 
 t0 <- Sys.time()
-modelo_rf_1 <- ranger(clase_binaria1 ~ ., data = dtrain,
-                  probability = TRUE,
-                  num.trees = 100,
-                  min.node.size=10,  # <---------
-                  mtry = n_variables,
-                  splitrule = "gini",
-                  sample.fraction = 0.66,
-                  importance = "impurity",
-                  verbose = TRUE)
+modelo_rf_1 <- ranger(clase_binaria1 ~ .,
+      data = dtrain,
+      probability = TRUE,
+      num.trees = 100,
+      min.node.size = 10, # <---------
+      mtry = n_variables,
+      splitrule = "gini",
+      sample.fraction = 0.66,
+      importance = "impurity",
+      verbose = TRUE
+)
 t1 <- Sys.time()
 as.numeric(t1 - t0, units = "secs")
 
@@ -96,12 +99,14 @@ pred_test <- predict(modelo_rf_1, dtest)
 
 # Ganancia en dtrain
 print(sum((pred_train$predictions[, "evento"] >= 0.025) * ifelse(
-                    dtrain$clase_binaria1 == "evento", 
-                    273000, -7000) / 0.7))
+      dtrain$clase_binaria1 == "evento",
+      273000, -7000
+) / 0.7))
 # Ganancia en dtest
 print(sum((pred_test$predictions[, "evento"] >= 0.025) * ifelse(
-                    dtest$clase_binaria1 == "evento",
-                    273000, -7000) / 0.3))
+      dtest$clase_binaria1 == "evento",
+      273000, -7000
+) / 0.3))
 
 ## Preguntas
 ## - ¿Qué paso en `train`?
@@ -112,7 +117,8 @@ print(sum((pred_test$predictions[, "evento"] >= 0.025) * ifelse(
 ## ---------------------------
 
 importancia <- as.data.table(modelo_rf_1$variable.importance,
-                    keep.rownames = TRUE)
+      keep.rownames = TRUE
+)
 colnames(importancia) <- c("variable", "importancia")
 setorder(importancia, -importancia)
 importancia
@@ -130,17 +136,20 @@ importancia
 
 dtrain$canarito <- runif(nrow(dtrain))
 
-modelo_rf_2 <- ranger(clase_binaria1 ~ ., data = dtrain,
-                  probability = TRUE,
-                  num.trees = 150,
-                  min.node.size = 10, # <-- probar con valores mas altos
-                  mtry = n_variables,
-                  splitrule = "gini",
-                  importance = "impurity",
-                  verbose = TRUE)
+modelo_rf_2 <- ranger(clase_binaria1 ~ .,
+      data = dtrain,
+      probability = TRUE,
+      num.trees = 150,
+      min.node.size = 10, # <-- probar con valores mas altos
+      mtry = n_variables,
+      splitrule = "gini",
+      importance = "impurity",
+      verbose = TRUE
+)
 
 importancia2 <- as.data.table(modelo_rf_2$variable.importance,
-                    keep.rownames = TRUE)
+      keep.rownames = TRUE
+)
 colnames(importancia2) <- c("variable", "importancia")
 setorder(importancia2, -importancia)
 importancia2
@@ -152,18 +161,21 @@ which(importancia2$variable == "canarito")
 ## Step 5.1: Hablando de los Extra Trees
 ## ---------------------------
 
-modelo_rf_3 <- ranger(clase_binaria1 ~ ., data = dtrain,
-                  probability = TRUE,
-                  num.trees = 150,
-                  min.node.size = 200, # <---------
-                  mtry = n_variables,
-                  splitrule = "extratrees", # <---------
-                  num.random.splits = 10, # <---------
-                  importance = "impurity",
-                  verbose = TRUE)
+modelo_rf_3 <- ranger(clase_binaria1 ~ .,
+      data = dtrain,
+      probability = TRUE,
+      num.trees = 150,
+      min.node.size = 200, # <---------
+      mtry = n_variables,
+      splitrule = "extratrees", # <---------
+      num.random.splits = 10, # <---------
+      importance = "impurity",
+      verbose = TRUE
+)
 
 importancia3 <- as.data.table(modelo_rf_3$variable.importance,
-                    keep.rownames = TRUE)
+      keep.rownames = TRUE
+)
 colnames(importancia3) <- c("variable", "importancia")
 setorder(importancia3, -importancia)
 importancia3
@@ -202,36 +214,39 @@ dataset <- dataset[foto_mes == 202103]
 clase_binaria <- ifelse(dataset$clase_ternaria == "BAJA+2", 1, 0)
 dataset$clase_ternaria <- NULL
 
-dtrain  <- lgb.Dataset(data = data.matrix(dataset), label = clase_binaria)
+dtrain <- lgb.Dataset(data = data.matrix(dataset), label = clase_binaria)
 
 set.seed(semillas[1])
 # LightGBM, al igual que XGB traen su implementación del CV
 # Los parámetros los iremos viendo en profundidad la siguiente clase.
-model_lgbm_cv <- lgb.cv(data = dtrain,
-         eval = "auc",
-         stratified = TRUE,
-         nfold = 5,
-         feature_pre_filter=FALSE,
-         param = list(objective = "binary",
-                       max_bin = 15,
-                       min_data_in_leaf = 300,
-                       learning_rate = 0.05
-                       )
+model_lgbm_cv <- lgb.cv(
+      data = dtrain,
+      eval = "auc",
+      stratified = TRUE,
+      nfold = 5,
+      feature_pre_filter = FALSE,
+      param = list(
+            objective = "binary",
+            max_bin = 15,
+            min_data_in_leaf = 300,
+            learning_rate = 0.05
       )
+)
 
 # Mejor iteración
 model_lgbm_cv$best_iter
 
 # Una vez que elegimos los parámetros tenemos que entrenar con todos.
-model_lgm <- lightgbm(data = dtrain,
-            nrounds = model_lgbm_cv$best_iter,
-            params = list(objective = "binary",
-                            max_bin = 15,
-                            min_data_in_leaf = 4000,
-                            learning_rate = 0.05),
-             verbose = -1)
-
-# También tiene su importancia de variables
-lgb.importance(model_lgm, percentage = TRUE)
+model_lgm <- lightgbm(
+      data = dtrain,
+      nrounds = model_lgbm_cv$best_iter,
+      params = list(
+            objective = "binary",
+            max_bin = 15,
+            min_data_in_leaf = 4000,
+            learning_rate = 0.05
+      ),
+      verbose = -1
+)
 
 ## Bienvenido al mundo de los ensambles

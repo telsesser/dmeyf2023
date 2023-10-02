@@ -33,7 +33,7 @@ El módelo se tiene que ir actualizando.
 conseptual driftting serían por ejemplo los fraudes que no se podrían modeloar porque cuando se detecta uno 
 ya cambian la metodologí y el módelo no me sirve para identificar los nuevos fraudes.
 
-probar decilado de 10, 100. O sea asignar el 10% más bajos al primer decil, el siguiente 10% al segundo decil y así.
+TODO: probar decilado de 10, 100. O sea asignar el 10% más bajos al primer decil, el siguiente 10% al segundo decil y así.
 
 Para hacer:
 Tomar modelo de la carpeta rpart
@@ -44,3 +44,41 @@ dejar el rpart corriendo mientras pienso el fueature engineering porque tarda mu
 filtrar la cantidad de 1 en la salida, el punto de corte, para ir probando diferentes en el kaggle. 
 para hacer esto quedarme con por ejemplo los primeros 10000 que más probabilidades tengan de ser +1
 buscar la meseta en el public, en que valores empieza a bajar mucho el score. 
+
+
+11/9 
+Sobre canaritos
+A medida que más profundo es el arbol, en ramás más bajas evalua con menos datos entonces tengo más posibilidades
+de tener "suerte" de que una variable aleatoria parezca que tiene una relación con el target.
+
+TODO: Cosas que funcionaron tp2
+* Analizar como meter el baja+2, baja+3, etc., en vez de solo dejar el continua
+* ver que meses elegir. el que gano el año pasado eligió un par de meses puntuales 
+
+
+Ver: drifting/densidades_fgeneral
+ver: CatastroprheAnalysis. ver si eliminar columna o ese mes, o tratar de imputar esa variable. 
+
+# 
+25/19/23
+TODO: Para probar en el tp:
+* delta de una variable
+* Media movil (ver si en el mes está debajo o encima de la media)
+* variación con respecto a los meses
+* minimo y maximo historicos de una variable
+* Tendencia: ver ejemplo en zulip: https://dmeyf2023.zulip.rebelare.com/#narrow/stream/401-Code/topic/.5Btip.5D.20features.20historicos.20usando.20SQL
+	con regr_slope(y, x)
+	Esto es muy sensible a outlierts
+	* Otra puede ser mes_actual/promedio_ultimos_6_meses
+	* prom_ult_3_meses/prom_ult_6_meses
+
+* Ver que en el medio está la pandemia
+
+02/10/23
+TODO:
+* Meter mano en la búsqueda bayeseana, que no es necesario todo lo que recorre. Para que no tarde tanto.
+* Para la optimización bayeseana hacer un undersampling porque sino va a tardar una banda. 
+* podría agregar:
+	+ Saldo de la tarjeta / limite
+
+

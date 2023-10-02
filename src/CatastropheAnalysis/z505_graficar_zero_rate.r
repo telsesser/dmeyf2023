@@ -11,6 +11,7 @@ require("data.table")
 
 # Parametros del script
 PARAM <- list()
+setwd("/home/tomi/Escritorio/Maestria/2 - DMEyF/")
 PARAM$dataset <- "./datasets/competencia_02.csv.gz"
 PARAM$experimento <- "CA5050"
 # FIN Parametros del script
@@ -21,7 +22,7 @@ PARAM$experimento <- "CA5050"
 
 # copio si hace falta el dataset
 
-setwd("~/buckets/b1/")
+# setwd("~/buckets/b1/")
 
 # cargo el dataset
 dataset <- fread(PARAM$dataset) # donde entreno
