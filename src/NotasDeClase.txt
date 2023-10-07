@@ -80,5 +80,20 @@ TODO:
 * Para la optimización bayeseana hacer un undersampling porque sino va a tardar una banda. 
 * podría agregar:
 	+ Saldo de la tarjeta / limite
-
+	+ Bins con el saldo o plata en cuenta para separar por clase social
+	+ Ver la variabilidad de la cuenta sueldo.
+	
+- Para el video de Miranda:
+	+ Ver el power point(!)
+	+ El script que habla la presentacion en la hoja 5 no es un código sino un speach.
+	+ La presentacion tiene que ser minima. Hasta si se hace sin presentacion mejor.
+		El criterio es dejar solo lo que es muy dificil de explicar con palabras o 
+		en una presentación sería muy esclarecedor.
+	
+	+ Dar confianza
+	+ No querer mostrar todo lo que si sino convencer a la otra persona
+	+ Leer la historia de Miranda 
+	+ pensar que gastaría un gran presupuesto con esto 
+	Se puede decir "tenemos este segmento de gente qeu se caracteriza por x
+	y cuando tienen x conducta ..."
 

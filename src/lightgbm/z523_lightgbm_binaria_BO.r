@@ -42,15 +42,15 @@ PARAM$input$dataset <- "./datasets/competencia_02.csv.gz"
 
 
 # los meses en los que vamos a entrenar
-PARAM$input$training <- c(202101, 202102, 202103, 202104, 202105)
+PARAM$input$training <- c(201905, 201906, 201907, 201908, 201909, 201910, 201911, 201912, 202001, 202002, 202101, 202102, 202103, 202104, 202105, 202106, 202107)
 # ver que meses elegir. el que gano el año pasado eligió un par de meses puntuales
 
 
 # un undersampling de 0.1  toma solo el 10% de los CONTINUA
 # sampleo porque son muchos datos. Buscar estrategia de undersampling
 # con un sampleo bajo puede correr en la computadora
-PARAM$trainingstrategy$undersampling <- 1.0
-PARAM$trainingstrategy$semilla_azar <- 102191 # Aqui poner su  primer  semilla
+PARAM$trainingstrategy$undersampling <- 0.8
+PARAM$trainingstrategy$semilla_azar <- 135977 # Aqui poner su  primer  semilla
 
 PARAM$hyperparametertuning$iteraciones <- 100
 PARAM$hyperparametertuning$xval_folds <- 5
@@ -58,7 +58,7 @@ PARAM$hyperparametertuning$POS_ganancia <- 273000
 PARAM$hyperparametertuning$NEG_ganancia <- -7000
 
 # Aqui poner su segunda semilla
-PARAM$hyperparametertuning$semilla_azar <- 200177
+PARAM$hyperparametertuning$semilla_azar <- 209173
 #------------------------------------------------------------------------------
 
 # Aqui se cargan los bordes de los hiperparametros
@@ -66,7 +66,7 @@ hs <- makeParamSet(
   makeNumericParam("learning_rate", lower = 0.01, upper = 0.3),
   makeNumericParam("feature_fraction", lower = 0.2, upper = 1.0),
   # porcentaje de columnas para cada árbol
-  makeIntegerParam("min_data_in_leaf", lower = 1L, upper = 8000L),
+  makeIntegerParam("min_data_in_leaf", lower = 10L, upper = 8000L),
   # min cant de datos en la última hoja, ver para optimizar
   makeIntegerParam("num_leaves", lower = 16L, upper = 1024L),
   # cantidad total de hojas, no se fija en la profundidad, se fija por cada hoja cual es la de mayor ganancia
