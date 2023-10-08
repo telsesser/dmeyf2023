@@ -267,7 +267,7 @@ dataset[
 # los campos que se van a utilizar
 campos_buenos <- setdiff(
   colnames(dataset),
-  c("clase_ternaria", "clase01", "azar", "training")
+  c("numero_cliente","clase_ternaria", "clase01", "azar", "training")
 )
 
 # defino los datos que forma parte del training

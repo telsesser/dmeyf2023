@@ -40,17 +40,17 @@ PARAM$input$dataset <- "./datasets/competencia_02.csv.gz"
 #  mucha magia emerger de esta eleccion
 PARAM$input$testing <- c(202105)
 PARAM$input$validation <- c(202104)
-PARAM$input$training <- c(202010, 202011, 202012, 202101, 202102, 202103)
+PARAM$input$training <- c(201905, 201906, 201907, 201908, 201909, 201910, 201911, 201912, 202001, 202002, 202101, 202102, 202103)
 
 # un undersampling de 0.1  toma solo el 10% de los CONTINUA
-PARAM$trainingstrategy$undersampling <- 1.0
-PARAM$trainingstrategy$semilla_azar <- 102191 # Aqui poner su  primer  semilla
+PARAM$trainingstrategy$undersampling <- 0.70
+PARAM$trainingstrategy$semilla_azar <- 135977 # Aqui poner su  primer  semilla
 
 PARAM$hyperparametertuning$POS_ganancia <- 273000
 PARAM$hyperparametertuning$NEG_ganancia <- -7000
 
 # Aqui poner su segunda semilla
-PARAM$lgb_semilla <- 200177
+PARAM$lgb_semilla <- 209173
 #------------------------------------------------------------------------------
 
 # Hiperparametros FIJOS de  lightgbm
@@ -143,7 +143,8 @@ fganancia_lgbm_meseta <- function(probs, datos) {
     "prob" = probs,
     "gan" = ifelse(vlabels == 1 & vpesos > 1,
       PARAM$hyperparametertuning$POS_ganancia,
-      PARAM$hyperparametertuning$NEG_ganancia  )
+      PARAM$hyperparametertuning$NEG_ganancia
+    )
   ))
 
   setorder(tbl, -prob)
@@ -214,8 +215,9 @@ EstimarGanancia_lightgbm <- function(x) {
   )
 
   tbl <- copy(dataset_test[, list("gan" = ifelse(clase_ternaria == "BAJA+2",
-    PARAM$hyperparametertuning$POS_ganancia, 
-    PARAM$hyperparametertuning$NEG_ganancia))])
+    PARAM$hyperparametertuning$POS_ganancia,
+    PARAM$hyperparametertuning$NEG_ganancia
+  ))])
 
   tbl[, prob := prediccion]
   setorder(tbl, -prob)
@@ -323,7 +325,7 @@ dataset[, clase01 := ifelse(clase_ternaria == "CONTINUA", 0L, 1L)]
 # los campos que se van a utilizar
 campos_buenos <- setdiff(
   colnames(dataset),
-  c("clase_ternaria", "clase01", "azar", "training")
+  c("mes", "foto_mes", "numero_cliente", "clase_ternaria", "clase01", "azar", "training")
 )
 
 # defino los datos que forma parte del training
@@ -341,9 +343,12 @@ dataset[
 dtrain <- lgb.Dataset(
   data = data.matrix(dataset[training == 1L, campos_buenos, with = FALSE]),
   label = dataset[training == 1L, clase01],
-  weight = dataset[training == 1L, 
-    ifelse(clase_ternaria == "BAJA+2", 1.0000001, 
-      ifelse(clase_ternaria == "BAJA+1", 1.0, 1.0))],
+  weight = dataset[
+    training == 1L,
+    ifelse(clase_ternaria == "BAJA+2", 1.0000001,
+      ifelse(clase_ternaria == "BAJA+1", 1.0, 1.0)
+    )
+  ],
   free_raw_data = FALSE
 )
 
@@ -352,21 +357,24 @@ dtrain <- lgb.Dataset(
 # defino los datos que forman parte de validation
 #  no hay undersampling
 dataset[, validation := 0L]
-dataset[ foto_mes %in% PARAM$input$validation,  validation := 1L]
+dataset[foto_mes %in% PARAM$input$validation, validation := 1L]
 
 dvalidate <- lgb.Dataset(
   data = data.matrix(dataset[validation == 1L, campos_buenos, with = FALSE]),
   label = dataset[validation == 1L, clase01],
-  weight = dataset[validation == 1L, 
-    ifelse(clase_ternaria == "BAJA+2", 1.0000001, 
-      ifelse(clase_ternaria == "BAJA+1", 1.0, 1.0))],
+  weight = dataset[
+    validation == 1L,
+    ifelse(clase_ternaria == "BAJA+2", 1.0000001,
+      ifelse(clase_ternaria == "BAJA+1", 1.0, 1.0)
+    )
+  ],
   free_raw_data = FALSE
 )
 
 
 # defino los datos de testing
 dataset[, testing := 0L]
-dataset[ foto_mes %in% PARAM$input$testing,  testing := 1L]
+dataset[foto_mes %in% PARAM$input$testing, testing := 1L]
 
 
 dataset_test <- dataset[testing == 1, ]
