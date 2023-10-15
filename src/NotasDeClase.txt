@@ -84,7 +84,11 @@ TODO:
 	+ Ver la variabilidad de la cuenta sueldo.
 	
 - Para el video de Miranda:
+	+ Hacer feature engineering para reducir el número de variables para poder explicar. 
 	+ Ver el power point(!)
+	+ Contar historias cortas sobre los cluster. Que características tienen y que termina siendo 
+		que ese grupo se termine yendo. 
+	+ El máximo es 5 minutos, puede ser menos. 
 	+ El script que habla la presentacion en la hoja 5 no es un código sino un speach.
 	+ La presentacion tiene que ser minima. Hasta si se hace sin presentacion mejor.
 		El criterio es dejar solo lo que es muy dificil de explicar con palabras o 
@@ -96,4 +100,12 @@ TODO:
 	+ pensar que gastaría un gran presupuesto con esto 
 	Se puede decir "tenemos este segmento de gente qeu se caracteriza por x
 	y cuando tienen x conducta ..."
+
+Clase 9/10/23
+En los modelos de boosting son muy robustos a variables correlaciondas pero 
+cuando son muchas si afecta. 
+TODO: Probar dejando las variables que les hice feature engineering
+	  Probar calculando la pendiente de los bins.
+	  Agregar el mes+3
+	  TODO: Ver lo de CatastroprheAnalysis
 

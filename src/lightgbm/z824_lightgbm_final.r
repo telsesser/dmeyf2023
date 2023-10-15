@@ -19,17 +19,17 @@ PARAM$experimento <- "KA8240"
 PARAM$input$dataset <- "./datasets/competencia_02.csv.gz"
 
 # meses donde se entrena el modelo
-PARAM$input$training <- c(202012, 202101, 202102, 202103, 202104, 202105)
+PARAM$input$training <- c(201906, 201907, 201908, 201909, 201910, 201911, 201912, 202001, 202012, 202101, 202102, 202103, 202104, 202105)
 PARAM$input$future <- c(202107) # meses donde se aplica el modelo
 
-PARAM$finalmodel$semilla <- 102191
+PARAM$finalmodel$semilla <- 135977
 
 # hiperparametros intencionalmente NO optimos
-PARAM$finalmodel$optim$num_iterations <- 730
-PARAM$finalmodel$optim$learning_rate <- 0.0323601846272594
-PARAM$finalmodel$optim$feature_fraction <- 0.909773795582897
-PARAM$finalmodel$optim$min_data_in_leaf <- 4637
-PARAM$finalmodel$optim$num_leaves <- 667
+PARAM$finalmodel$optim$num_iterations <- 1859
+PARAM$finalmodel$optim$learning_rate <- 0.0221787360433459
+PARAM$finalmodel$optim$feature_fraction <- 0.999869931759323
+PARAM$finalmodel$optim$min_data_in_leaf <- 15159
+PARAM$finalmodel$optim$num_leaves <- 700
 
 
 # Hiperparametros FIJOS de  lightgbm
@@ -126,8 +126,10 @@ dtrain <- lgb.Dataset(
 
 
 # genero el modelo
-param_completo <- c(PARAM$finalmodel$lgb_basicos,
-  PARAM$finalmodel$optim)
+param_completo <- c(
+  PARAM$finalmodel$lgb_basicos,
+  PARAM$finalmodel$optim
+)
 
 modelo <- lgb.train(
   data = dtrain,
@@ -168,6 +170,13 @@ fwrite(tb_entrega,
 
 # ordeno por probabilidad descendente
 setorder(tb_entrega, -prob)
+
+# put 1 where prob > 0.5 and 0 otherwise, and save it. the name of the file contains the count of rows where prob > 0.5
+tb_entrega[, Predicted := ifelse(prob > 0.025, 1L, 0L)]
+fwrite(tb_entrega[, list(numero_de_cliente, Predicted)],
+  file = paste0(PARAM$experimento, "_", sum(tb_entrega$Predicted), ".csv"),
+  sep = ","
+)
 
 
 # genero archivos con los  "envios" mejores
