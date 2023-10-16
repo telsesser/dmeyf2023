@@ -1,9 +1,30 @@
 library(data.table)
 
-setwd("./Maestria/2 - DMEyF/")
-datos <- fread("./datasets/competencia_02_miranda.csv")
+setwd("/home/tomi/Escritorio/Maestria/2 - DMEyF")
+datos <- fread("./datasets/competencia_02_miranda_2.csv")
 
 print(colnames(datos))
+print(sum(is.na(datos$Visa_Finiciomora)))
+
+
+
+# get all the columns names that starts wiht Visa_
+visa_columns <- names(datos)[grepl("^Visa_", names(datos))]
+print(visa_columns)
+for (col in visa_columns) {
+    datos[is.na(get(col)), (col) := 0]
+}
+
+master_columns <- names(datos)[grepl("^Master_", names(datos))]
+for (col in master_columns) {
+    datos[is.na(get(col)), (col) := 0]
+}
+print(sum(is.na(datos$Visa_Finiciomora)))
+
+datos[is.na(datos$cmobile_app_trx), cmobile_app_trx := 0]
+datos[is.na(datos$mtarjeta_visa_descuentos), mtarjeta_visa_descuentos := 0]
+datos[is.na(datos$mtarjeta_visa_descuentos), mtarjeta_visa_descuentos := 0]
+
 
 
 datos[, sum_cseguro := rowSums(.SD[, c("cseguro_vida", "cseguro_auto", "cseguro_vivienda", "cseguro_accidentes_personales"), with = FALSE])]
@@ -31,4 +52,4 @@ datos[, sum_transacciones_cajas := rowSums(.SD[, c("chomebanking_transacciones",
 datos[, sum_transacciones_otras := rowSums(.SD[, c("ctarjeta_debito_transacciones", "ccallcenter_transacciones", "chomebanking_transacciones", "ccajas_transacciones", "catm_trx", "catm_trx_other", "cmobile_app_trx"), with = FALSE])]
 
 
-write.csv(datos, "./Maestria/2 - DMEyF/datasets/competencia_02_mirando_procesado.csv", row.names = FALSE)
+write.csv(datos, "./datasets/competencia_02_mirando_procesado_2.csv", row.names = FALSE)
