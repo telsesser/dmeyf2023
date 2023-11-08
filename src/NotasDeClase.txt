@@ -109,3 +109,14 @@ TODO: Probar dejando las variables que les hice feature engineering
 	  Agregar el mes+3
 	  TODO: Ver lo de CatastroprheAnalysis
 
+Clase 23/10/23: 	
+TODO: CatastroprheAnalysis ver como hacer la interpolación cuando ese cliente se fue al més siguiente..
+
+
+TODO: Hacer varios modelos y juntarlos los resultados de cada uno para cada N°cliente+foto_mes
+Luego aplicar votación(por mayoria o cuantos correctos para mandar, por ejemplo con 1, 2 o 3 que esten
+de acuerdo ya pongo como ok), promedio, un metamodelo que tome esta decisión en base a los resultados
+de los otros modelos. No ir por esta ultima de una porque toma mucho tiempo, con el promedio va bien. 
+Hacer diferentes modelos cambiando: Semillas, hiperparámetros, probar otros algoritmos, etc. 
+
+
