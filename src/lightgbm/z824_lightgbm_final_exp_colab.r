@@ -15,9 +15,18 @@ require("lightgbm")
 #  muy pronto esto se leera desde un archivo formato .yaml
 
 PARAM <- list()
-PARAM$experimento <- "KA8240"
+PARAM$experimento <- "Exp_col"
 # setwd("/home/aleb/dmeyf23/datasets")
-PARAM$input$dataset <- "./datasets/competencia_03_exp_col.csv.gz"
+PARAM$input$dataset0 <- "./datasets/competencia_03_exp_col.csv.gz"
+PARAM$input$dataset1 <- "./datasets/competencia_03_exp_col_lags_1.csv.gz"
+PARAM$input$dataset2 <- "./datasets/competencia_03_exp_col_lags_2.csv.gz"
+
+setwd("~/buckets/b1")
+dataset0 <- fread(PARAM$input$dataset0, stringsAsFactors = TRUE)
+dataset1 <- fread(PARAM$input$dataset1, stringsAsFactors = TRUE)
+dataset2 <- fread(PARAM$input$dataset2, stringsAsFactors = TRUE)
+
+dataset <- cbind(dataset0, dataset1, dataset2)
 
 # meses donde se entrena el modelo
 PARAM$input$training <- c(202102, 202103, 202104, 202105)
@@ -66,8 +75,7 @@ PARAM$finalmodel$lgb_basicos <- list(
 
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
-dataset <- fread(PARAM$input$dataset, stringsAsFactors = TRUE)
-
+# Aqui empieza el programa
 
 # Catastrophe Analysis  -------------------------------------------------------
 # deben ir cosas de este estilo
