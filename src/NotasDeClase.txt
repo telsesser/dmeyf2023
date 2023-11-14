@@ -120,3 +120,7 @@ de los otros modelos. No ir por esta ultima de una porque toma mucho tiempo, con
 Hacer diferentes modelos cambiando: Semillas, hiperparámetros, probar otros algoritmos, etc. 
 
 
+TODO:
+De los experimentos colaborativos: 
+	- probar agregar BAJA+3 y BAJA+4
+	
