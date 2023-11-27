@@ -32,9 +32,9 @@ options(error = function() {
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
 
-PARAM$experimento <- "bayesiana_comp3_1"
+PARAM$experimento <- "bayesiana_comp3_df2_1"
 
-PARAM$input$dataset <- "./datasets/competencia_03_process_1.csv.gz"
+PARAM$input$dataset <- "./datasets/competencia_03_process_2.csv.gz"
 
 # los meses en los que vamos a entrenar
 #  mucha magia emerger de esta eleccion
@@ -97,7 +97,7 @@ PARAM$bo_lgb <- makeParamSet(
 )
 
 # si usted es ambicioso, y tiene paciencia, podria subir este valor a 100
-PARAM$bo_iteraciones <- 50 # iteraciones de la Optimizacion Bayesiana
+PARAM$bo_iteraciones <- 100 # iteraciones de la Optimizacion Bayesiana
 
 #------------------------------------------------------------------------------
 # graba a un archivo los componentes de lista
@@ -277,7 +277,6 @@ setwd("~/buckets/b1/") # Establezco el Working Directory
 # cargo el dataset donde voy a entrenar el modelo
 dataset <- fread(PARAM$input$dataset)
 
-
 # creo la carpeta donde va el experimento
 dir.create("./exp/", showWarnings = FALSE)
 dir.create(paste0("./exp/", PARAM$experimento, "/"), showWarnings = FALSE)
@@ -321,11 +320,14 @@ if (file.exists(klog)) {
 # paso la clase a binaria que tome valores {0,1}  enteros
 dataset[, clase01 := ifelse(clase_ternaria == "CONTINUA", 0L, 1L)]
 
+nombres_columnas <- colnames(dataset)
+columnas_a_sacar <- nombres_columnas[grep("_1$|_3$|_6$|_9$|_12$", nombres_columnas)]
+columnas_a_dejar <- setdiff(nombres_columnas, columnas_a_sacar)
 
 # los campos que se van a utilizar
 campos_buenos <- setdiff(
-  colnames(dataset),
-  c("mes+1", "mes+2", "numero_de_cliente", "mes", "foto_mes", "numero_cliente", "clase_ternaria", "clase01", "azar", "training")
+  columnas_a_dejar,
+  c("numero_de_cliente", "foto_mes", "numero_cliente", "clase_ternaria", "clase01", "azar", "training")
 )
 
 # defino los datos que forma parte del training
