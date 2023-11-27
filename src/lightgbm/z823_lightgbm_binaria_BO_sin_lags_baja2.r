@@ -365,6 +365,14 @@ dataset[foto_mes %in% PARAM$input$validation, validation := 1L]
 dvalidate <- lgb.Dataset(
   data = data.matrix(dataset[validation == 1L, campos_buenos, with = FALSE]),
   label = dataset[validation == 1L, clase01],
+  weight = dataset[
+    training == 1L,
+    ifelse(clase_ternaria == "BAJA+3", 1.0,
+      ifelse(clase_ternaria == "BAJA+2", 1.0,
+        ifelse(clase_ternaria == "BAJA+1", 1.0, 1.0)
+      )
+    )
+  ],
   free_raw_data = FALSE
 )
 
