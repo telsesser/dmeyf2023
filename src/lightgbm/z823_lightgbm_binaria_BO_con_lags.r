@@ -320,13 +320,10 @@ if (file.exists(klog)) {
 # paso la clase a binaria que tome valores {0,1}  enteros
 dataset[, clase01 := ifelse(clase_ternaria == "CONTINUA", 0L, 1L)]
 
-nombres_columnas <- colnames(dataset)
-columnas_a_sacar <- nombres_columnas[grep("_1$|_3$|_6$|_9$|_12$", nombres_columnas)]
-columnas_a_dejar <- setdiff(nombres_columnas, columnas_a_sacar)
 
 # los campos que se van a utilizar
 campos_buenos <- setdiff(
-  columnas_a_dejar,
+  colnames(dataset),
   c("numero_de_cliente", "foto_mes", "numero_cliente", "clase_ternaria", "clase01", "azar", "training")
 )
 
