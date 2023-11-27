@@ -89,9 +89,11 @@ campos_buenos <- setdiff(colnames(dataset), c("clase_ternaria", "clase01"))
 
 
 # establezco donde entreno
+dapply <- dataset[foto_mes %in% PARAM$input$future]
+dataset <- dataset[foto_mes %in% PARAM$input$training]
+
 dataset[, train := 0L]
 dataset[foto_mes %in% PARAM$input$training, train := 1L]
-
 #--------------------------------------
 # creo las carpetas donde van los resultados
 # creo la carpeta donde va el experimento
@@ -105,8 +107,8 @@ setwd(paste0("./exp/", PARAM$experimento, "/"))
 
 # dejo los datos en el formato que necesita LightGBM
 dtrain <- lgb.Dataset(
-  data = data.matrix(dataset[train == 1L, campos_buenos, with = FALSE]),
-  label = dataset[train == 1L, clase01]
+  data = data.matrix(dataset[, campos_buenos, with = FALSE]),
+  label = dataset[, clase01]
 )
 
 
