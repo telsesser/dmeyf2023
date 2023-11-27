@@ -14,11 +14,16 @@ require("lightgbm")
 #  muy pronto esto se leera desde un archivo formato .yaml
 
 PARAM <- list()
+<<<<<<< HEAD
 
+=======
+PARAM$experimento <- "Exp_col"
+>>>>>>> d528dd844a6c3e6986851022ca26b9f3e0497a43
 # setwd("/home/aleb/dmeyf23/datasets")
 PARAM$input$dataset0 <- "./datasets/competencia_03_exp_col.csv.gz"
 PARAM$input$dataset1 <- "./datasets/competencia_03_exp_col_lags_1.csv.gz"
 PARAM$input$dataset2 <- "./datasets/competencia_03_exp_col_lags_2.csv.gz"
+<<<<<<< HEAD
 PARAM$input$dataset3 <- "./datasets/competencia_03_exp_col_4.csv.gz"
 
 
@@ -90,6 +95,15 @@ a_poner <- c(
 lista_ct_arbitraria <- setdiff(lista_ct_nulls, a_sacar)
 lista_ct_arbitraria <- Reduce(union, c(lista_ct_arbitraria, a_poner))
 print(lista_ct_arbitraria)
+=======
+
+setwd("~/buckets/b1")
+dataset0 <- fread(PARAM$input$dataset0, stringsAsFactors = TRUE)
+dataset1 <- fread(PARAM$input$dataset1, stringsAsFactors = TRUE)
+dataset2 <- fread(PARAM$input$dataset2, stringsAsFactors = TRUE)
+
+dataset <- cbind(dataset0, dataset1, dataset2)
+>>>>>>> d528dd844a6c3e6986851022ca26b9f3e0497a43
 
 # meses donde se entrena el modelo
 PARAM$input$training <- c(
@@ -163,6 +177,32 @@ PARAM$finalmodel$lgb_basicos <- list(
 )
 
 
+<<<<<<< HEAD
+=======
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+# Aqui empieza el programa
+
+# Catastrophe Analysis  -------------------------------------------------------
+# deben ir cosas de este estilo
+#   dataset[foto_mes == 202006, active_quarter := NA]
+
+# Data Drifting
+# por ahora, no hago nada
+
+
+# Feature Engineering Historico  ----------------------------------------------
+#   aqui deben calcularse los  lags y  lag_delta
+#   Sin lags no hay paraiso ! corta la bocha
+#   https://rdrr.io/cran/data.table/man/shift.html
+
+
+#--------------------------------------
+
+# paso la clase a binaria que tome valores {0,1}  enteros
+# set trabaja con la clase  POS = { BAJA+1, BAJA+2 }
+# esta estrategia es MUY importante
+>>>>>>> d528dd844a6c3e6986851022ca26b9f3e0497a43
 dataset[, clase01 := ifelse(clase_ternaria %in% c("BAJA+2", "BAJA+1"), 1L, 0L)]
 
 #--------------------------------------
