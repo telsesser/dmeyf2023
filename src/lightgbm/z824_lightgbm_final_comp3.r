@@ -65,8 +65,6 @@ PARAM$finalmodel$lgb_basicos <- list(
   skip_drop = 0.5, # 0.0 <= skip_drop <= 1.0
 
   extra_trees = TRUE, # Magic Sauce
-
-  seed = PARAM$finalmodel$semilla
 )
 
 
@@ -118,7 +116,7 @@ param_completo <- c(
   PARAM$finalmodel$optim
 )
 models <- list()
-seeds <- c(2, 104147, 41947, 59809, 70507, 82073, 15649, 28403, 14879, 13523)
+seeds <- c(2, 104147, 41947) # , 59809, 70507, 82073, 15649, 28403, 14879, 13523)
 lista_ganancias_semillas <- list()
 ganancias_semilla <- data.table()
 
