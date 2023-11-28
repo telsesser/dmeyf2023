@@ -32,15 +32,15 @@ options(error = function() {
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
 
-PARAM$experimento <- "bayesiana_comp3_sinLags_df3_baja3_1"
+PARAM$experimento <- "bayesiana_comp3_sinLags_df3_baja3_2"
 
-PARAM$input$dataset <- "./datasets/competencia_03_process_3.csv.gz"
+PARAM$input$dataset <- "./datasets/competencia_03_4.csv.gz"
 
 # los meses en los que vamos a entrenar
 #  mucha magia emerger de esta eleccion
-PARAM$input$testing <- c(202107)
-PARAM$input$validation <- c(202106)
-PARAM$input$training <- c(201901, 201902, 201903, 201904, 201905, 201906, 201907, 201908, 201909, 201910, 201911, 201912, 202001, 202008, 202009, 202010, 202011, 202012, 202101, 202102, 202103, 202104, 202105)
+PARAM$input$testing <- c(202106)
+PARAM$input$validation <- c(202105)
+PARAM$input$training <- c(201901, 201902, 201903, 201904, 201905, 201906, 201907, 201908, 201909, 201910, 201911, 201912, 202008, 202009, 202010, 202011, 202012, 202101, 202102, 202103, 202104)
 
 # un undersampling de 0.1  toma solo el 10% de los CONTINUA
 PARAM$trainingstrategy$undersampling <- 1
