@@ -14,7 +14,7 @@ require("lightgbm")
 # defino los parametros de la corrida, en una lista, la variable global  PARAM
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
-PARAM$experimento <- "final_sinLags_1_bjas1"
+PARAM$experimento <- "entrega3_sinLags_1_bjas1"
 
 PARAM$input$dataset <- "./datasets/competencia_03_4.csv.gz"
 
@@ -29,7 +29,6 @@ PARAM$input$future <- c(202109) # meses donde se aplica el modelo
 
 PARAM$finalmodel$semilla <- 135977
 
-# hiperparametros intencionalmente NO optimos
 PARAM$finalmodel$optim$num_iterations <- 699
 PARAM$finalmodel$optim$learning_rate <- 0.06079494566
 PARAM$finalmodel$optim$feature_fraction <- 0.6755427812
