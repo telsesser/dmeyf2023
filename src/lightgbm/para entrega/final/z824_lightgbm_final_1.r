@@ -14,7 +14,7 @@ require("lightgbm")
 # defino los parametros de la corrida, en una lista, la variable global  PARAM
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
-PARAM$experimento <- "final_sinLags_2_bjas2"
+PARAM$experimento <- "final_sinLags_1_bjas1"
 
 PARAM$input$dataset <- "./datasets/competencia_03_4.csv.gz"
 
@@ -23,9 +23,9 @@ PARAM$input$training <- c(
   201901, 201902, 201903, 201904, 201905, 201906,
   201907, 201908, 201909, 201910, 201911, 201912, 202001,
   202007, 202008, 202009, 202010, 202011, 202012, 202101, 202102, 202103, 202104,
-  202105, 202106
+  202105, 202106, 202107
 )
-PARAM$input$future <- c(202107) # meses donde se aplica el modelo
+PARAM$input$future <- c(202109) # meses donde se aplica el modelo
 
 PARAM$finalmodel$semilla <- 135977
 
@@ -77,11 +77,12 @@ setwd("~/buckets/b1")
 # cargo el dataset donde voy a entrenar
 dataset <- fread(PARAM$input$dataset, stringsAsFactors = TRUE)
 
-dataset[, clase01 := ifelse(clase_ternaria %in% c("BAJA+2"), 1L, 0L)]
+dataset[, clase01 := ifelse(clase_ternaria %in% c("BAJA+1"), 1L, 0L)]
 
 #--------------------------------------
 
 # los campos que se van a utilizar
+
 nombres_columnas <- colnames(dataset)
 columnas_a_sacar <- nombres_columnas[grep("_1$|_3$|_6$|_9$|_12$", nombres_columnas)]
 columnas_a_dejar <- setdiff(nombres_columnas, columnas_a_sacar)
@@ -91,7 +92,6 @@ campos_buenos <- setdiff(columnas_a_dejar, c(
   "mes+1", "mes+2", "mes+3", "numero_de_cliente",
   "mes", "foto_mes", "clase_ternaria", "clase_ternaria_2", "clase01"
 ))
-
 
 #--------------------------------------
 

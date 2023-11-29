@@ -14,15 +14,15 @@ require("lightgbm")
 # defino los parametros de la corrida, en una lista, la variable global  PARAM
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
-PARAM$experimento <- "final_sinLags_2_bjas2"
+PARAM$experimento <- "final_goss_0_bjas2"
 
 PARAM$input$dataset <- "./datasets/competencia_03_4.csv.gz"
 
 # meses donde se entrena el modelo
 PARAM$input$training <- c(
-  201901, 201902, 201903, 201904, 201905, 201906,
+  201903, 201904, 201905, 201906,
   201907, 201908, 201909, 201910, 201911, 201912, 202001,
-  202007, 202008, 202009, 202010, 202011, 202012, 202101, 202102, 202103, 202104,
+  202010, 202011, 202012, 202101, 202102, 202103, 202104,
   202105, 202106
 )
 PARAM$input$future <- c(202107) # meses donde se aplica el modelo
@@ -30,12 +30,15 @@ PARAM$input$future <- c(202107) # meses donde se aplica el modelo
 PARAM$finalmodel$semilla <- 135977
 
 # hiperparametros intencionalmente NO optimos
-PARAM$finalmodel$optim$num_iterations <- 699
-PARAM$finalmodel$optim$learning_rate <- 0.06079494566
-PARAM$finalmodel$optim$feature_fraction <- 0.6755427812
-PARAM$finalmodel$optim$min_data_in_leaf <- 45222
-PARAM$finalmodel$optim$num_leaves <- 787
-
+PARAM$finalmodel$optim$num_iterations <- 69
+PARAM$finalmodel$optim$learning_rate <- 0.1401272322
+PARAM$finalmodel$optim$feature_fraction <- 0.5457549197
+PARAM$finalmodel$optim$min_data_in_leaf <- 21356
+PARAM$finalmodel$optim$num_leaves <- 476
+PARAM$finalmodel$optim$feature_fraction_bynode <- 0.7826828034
+PARAM$finalmodel$optim$max_depth <- 24
+PARAM$finalmodel$optim$top_rate <- 0.2224000616
+PARAM$finalmodel$optim$other_rate <- 0.2886006237
 
 
 # Hiperparametros FIJOS de  lightgbm
@@ -48,7 +51,6 @@ PARAM$finalmodel$lgb_basicos <- list(
   feature_pre_filter = FALSE,
   force_row_wise = TRUE, # para reducir warnings
   verbosity = -100,
-  max_depth = -1L, # -1 significa no limitar,  por ahora lo dejo fijo
   min_gain_to_split = 0.0, # min_gain_to_split >= 0.0
   min_sum_hessian_in_leaf = 0.001, #  min_sum_hessian_in_leaf >= 0.0
   lambda_l1 = 0.0, # lambda_l1 >= 0.0
@@ -64,7 +66,7 @@ PARAM$finalmodel$lgb_basicos <- list(
   drop_rate = 0.1, # 0.0 < neg_bagging_fraction <= 1.0
   max_drop = 50, # <=0 means no limit
   skip_drop = 0.5, # 0.0 <= skip_drop <= 1.0
-
+  data_sample_strategy = "goss",
   extra_trees = TRUE # Magic Sauce
 )
 
@@ -82,16 +84,10 @@ dataset[, clase01 := ifelse(clase_ternaria %in% c("BAJA+2"), 1L, 0L)]
 #--------------------------------------
 
 # los campos que se van a utilizar
-nombres_columnas <- colnames(dataset)
-columnas_a_sacar <- nombres_columnas[grep("_1$|_3$|_6$|_9$|_12$", nombres_columnas)]
-columnas_a_dejar <- setdiff(nombres_columnas, columnas_a_sacar)
-
-
-campos_buenos <- setdiff(columnas_a_dejar, c(
+campos_buenos <- setdiff(colnames(dataset), c(
   "mes+1", "mes+2", "mes+3", "numero_de_cliente",
   "mes", "foto_mes", "clase_ternaria", "clase_ternaria_2", "clase01"
 ))
-
 
 #--------------------------------------
 
