@@ -14,7 +14,7 @@ require("lightgbm")
 # defino los parametros de la corrida, en una lista, la variable global  PARAM
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
-PARAM$experimento <- "entrega3_goss_2_bjas2"
+PARAM$experimento <- "entrega3_goss_1_bjas2"
 
 PARAM$input$dataset <- "./datasets/competencia_03_4.csv.gz"
 
@@ -29,16 +29,16 @@ PARAM$input$future <- c(202109) # meses donde se aplica el modelo
 
 PARAM$finalmodel$semilla <- 135977
 
-# hiperparametros intencionalmente NO optimos
-PARAM$finalmodel$optim$num_iterations <- 110
-PARAM$finalmodel$optim$learning_rate <- 0.06826998786
-PARAM$finalmodel$optim$feature_fraction <- 0.8271444506
-PARAM$finalmodel$optim$min_data_in_leaf <- 2897
-PARAM$finalmodel$optim$num_leaves <- 121
-PARAM$finalmodel$optim$feature_fraction_bynode <- 0.9894810162
-PARAM$finalmodel$optim$max_depth <- 3
-PARAM$finalmodel$optim$top_rate <- 0.2083280749
-PARAM$finalmodel$optim$other_rate <- 0.3674558832
+PARAM$finalmodel$optim$num_iterations <- 193
+PARAM$finalmodel$optim$learning_rate <- 0.08998536022
+PARAM$finalmodel$optim$feature_fraction <- 0.6675297761
+PARAM$finalmodel$optim$min_data_in_leaf <- 6544
+PARAM$finalmodel$optim$num_leaves <- 350
+PARAM$finalmodel$optim$feature_fraction_bynode <- 0.6821062432
+PARAM$finalmodel$optim$max_depth <- 29
+PARAM$finalmodel$optim$top_rate <- 0.1430618387
+PARAM$finalmodel$optim$other_rate <- 0.3348507922
+
 
 
 # Hiperparametros FIJOS de  lightgbm
